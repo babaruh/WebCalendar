@@ -1,23 +1,20 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER $APP_UID
-WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+﻿# Building
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
-ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["WebCalendar/WebCalendar.csproj", "WebCalendar/"]
-RUN dotnet restore "WebCalendar/WebCalendar.csproj"
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+
 COPY . .
-WORKDIR "/src/WebCalendar"
-RUN dotnet build "WebCalendar.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
-FROM build AS publish
-ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "WebCalendar.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+WORKDIR /app/src/WebCalendar
+RUN dotnet publish -c Release -o build
 
-FROM base AS final
+# Running
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS final-env
 WORKDIR /app
-COPY --from=publish /app/publish .
+
+COPY --from=build-env /app/src/WebCalendar/build .
+
+RUN dotnet dev-certs https
+EXPOSE 5099
 ENTRYPOINT ["dotnet", "WebCalendar.dll"]
