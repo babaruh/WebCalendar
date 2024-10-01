@@ -1,0 +1,23 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <h1>Current Date and Time</h1>
+    <p id="currentDateTime"></p>
+</div>
+
+@section Scripts {
+    <script>
+        function updateDateTime() {
+            let now = new Date();
+            document.getElementById('currentDateTime').textContent = now.toLocaleString();
+        }
+
+        updateDateTime();
+
+        setInterval(updateDateTime, 1000);
+    </script>
+}

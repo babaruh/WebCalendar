@@ -1,0 +1,6 @@
+﻿services:
+  webcalendar:
+    image: webcalendar
+    build:
+      context: .
+      dockerfile: WebCalendar/Dockerfile
